@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+    header span { font-size: .8rem; opacity: .5; }
+    #task-count {
+      background: #0f3460;
+      color: #e94560;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 32px 16px; }
+
+    /* ── Create form ── */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      margin-bottom: 24px;
+    }
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: #555; text-transform: uppercase; letter-spacing: .5px; }
+
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    input[type="text"], textarea, select {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: .95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+      background: #fafafa;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus { border-color: #e94560; background: white; }
+    #new-title { flex: 1; min-width: 200px; }
+    #new-desc  { width: 100%; resize: vertical; min-height: 60px; margin-top: 10px; }
+    #new-status { min-width: 140px; }
+
+    .btn {
+      padding: 10px 22px;
+      border: none;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .1s, box-shadow .2s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: linear-gradient(135deg, #e94560, #c0392b); color: white; box-shadow: 0 4px 12px rgba(233,69,96,.3); }
+    .btn-primary:hover { box-shadow: 0 6px 16px rgba(233,69,96,.45); }
+    .btn-danger  { background: #fff0f0; color: #e94560; }
+    .btn-danger:hover  { background: #ffe0e0; }
+    .btn-ghost  { background: #f0f2f5; color: #555; }
+    .btn-ghost:hover  { background: #e2e8f0; }
+    .btn-sm { padding: 6px 14px; font-size: .8rem; border-radius: 8px; }
+
+    /* ── Filters ── */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filter-btn {
+      padding: 7px 18px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: white;
+      color: #666;
+      transition: all .2s;
+    }
+    .filter-btn:hover { border-color: #e94560; color: #e94560; }
+    .filter-btn.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+
+    /* ── Task list ── */
+    #task-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .task-item {
+      background: white;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: box-shadow .2s, transform .15s;
+      border-left: 4px solid transparent;
+    }
+    .task-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); transform: translateY(-1px); }
+    .task-item.pending     { border-left-color: #f59e0b; }
+    .task-item.in_progress { border-left-color: #3b82f6; }
+    .task-item.done        { border-left-color: #10b981; }
+
+    .task-body { flex: 1; min-width: 0; }
+    .task-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .task-item.done .task-title { text-decoration: line-through; color: #999; }
+    .task-desc { font-size: .85rem; color: #888; margin-bottom: 10px; line-height: 1.4; }
+    .task-meta { font-size: .75rem; color: #bbb; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+    .badge-pending     { background: #fef3c7; color: #d97706; }
+    .badge-in_progress { background: #dbeafe; color: #2563eb; }
+    .badge-done        { background: #d1fae5; color: #059669; }
+
+    .task-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+
+    /* ── Edit inline ── */
+    .edit-form { display: none; margin-top: 12px; }
+    .edit-form.open { display: block; }
+    .edit-form input, .edit-form textarea, .edit-form select { width: 100%; margin-bottom: 8px; }
+    .edit-form .row { display: flex; gap: 8px; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #bbb;
+    }
+    .empty svg { margin-bottom: 16px; opacity: .3; }
+    .empty p { font-size: 1rem; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1a1a2e;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: .9rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Loading ── */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #e2e8f0;
+      border-top-color: #e94560;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Task Manager</h1>
+  <span id="task-count">0 tasks</span>
+</header>
+
+<main>
+  <!-- Create form -->
+  <div class="card">
+    <h2>New Task</h2>
+    <div class="form-row">
+      <input id="new-title" type="text" placeholder="Task title..." />
+      <select id="new-status">
+        <option value="pending">Pending</option>
+        <option value="in_progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+      <button class="btn btn-primary" onclick="createTask()">+ Add Task</button>
+    </div>
+    <textarea id="new-desc" placeholder="Description (optional)..."></textarea>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="filter-btn active" data-status="" onclick="setFilter(this, '')">All</button>
+    <button class="filter-btn" data-status="pending"     onclick="setFilter(this, 'pending')">Pending</button>
+    <button class="filter-btn" data-status="in_progress" onclick="setFilter(this, 'in_progress')">In Progress</button>
+    <button class="filter-btn" data-status="done"        onclick="setFilter(this, 'done')">Done</button>
+  </div>
+
+  <!-- Task list -->
+  <div id="task-list"><div class="spinner"></div></div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const API = '';
+  let currentFilter = '';
+
+  // ── Fetch & render ──────────────────────────────────────────────────────────
+  async function loadTasks() {
+    const url = currentFilter ? `/tasks/?status=${currentFilter}` : '/tasks/';
+    const res  = await fetch(url);
+    const data = await res.json();
+    renderTasks(data.tasks, data.total);
+  }
+
+  function renderTasks(tasks, total) {
+    const el = document.getElementById('task-list');
+    document.getElementById('task-count').textContent = `${total} task${total !== 1 ? 's' : ''}`;
+
+    if (!tasks.length) {
+      el.innerHTML = `
+        <div class="empty">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/>
+          </svg>
+          <p>No tasks yet. Create your first one above!</p>
+        </div>`;
+      return;
+    }
+
+    el.innerHTML = tasks.map(t => `
+      <div class="task-item ${t.status}" id="task-${t.id}">
+        <div class="task-body">
+          <div class="task-title">${esc(t.title)}</div>
+          ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ''}
+          <span class="badge badge-${t.status}">${label(t.status)}</span>
+          <span class="task-meta" style="margin-left:8px">· ${timeAgo(t.created_at)}</span>
+
+          <!-- inline edit form -->
+          <div class="edit-form" id="edit-${t.id}">
+            <input  type="text"  id="edit-title-${t.id}"  value="${esc(t.title)}"       placeholder="Title" />
+            <textarea            id="edit-desc-${t.id}"                                 placeholder="Description">${esc(t.description || '')}</textarea>
+            <div class="row">
+              <select id="edit-status-${t.id}">
+                ${['pending','in_progress','done'].map(s =>
+                  `<option value="${s}" ${t.status===s?'selected':''}>${label(s)}</option>`
+                ).join('')}
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="saveEdit(${t.id})">Save</button>
+              <button class="btn btn-ghost   btn-sm" onclick="toggleEdit(${t.id})">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button class="btn btn-ghost  btn-sm" onclick="toggleEdit(${t.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── CRUD ────────────────────────────────────────────────────────────────────
+  async function createTask() {
+    const title = document.getElementById('new-title').value.trim();
+    if (!title) { toast('Title is required'); return; }
+    const body = {
+      title,
+      description: document.getElementById('new-desc').value.trim() || null,
+      status: document.getElementById('new-status').value,
+    };
+    const res = await fetch('/tasks/', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.ok) {
+      document.getElementById('new-title').value = '';
+      document.getElementById('new-desc').value  = '';
+      toast('Task created');
+      loadTasks();
+    } else {
+      toast('Error creating task');
+    }
+  }
+
+  async function saveEdit(id) {
+    const body = {
+      title:       document.getElementById(`edit-title-${id}`).value.trim(),
+      description: document.getElementById(`edit-desc-${id}`).value.trim() || null,
+      status:      document.getElementById(`edit-status-${id}`).value,
+    };
+    const res = await fetch(`/tasks/${id}`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.ok) { toast('Task updated'); loadTasks(); }
+    else         { toast('Error updating task'); }
+  }
+
+  async function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    const res = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+    if (res.ok) { toast('Task deleted'); loadTasks(); }
+    else         { toast('Error deleting task'); }
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+  function toggleEdit(id) {
+    const form = document.getElementById(`edit-${id}`);
+    form.classList.toggle('open');
+  }
+
+  function setFilter(btn, status) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = status;
+    loadTasks();
+  }
+
+  function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function label(status) {
+    return { pending: 'Pending', in_progress: 'In Progress', done: 'Done' }[status] || status;
+  }
+
+  function timeAgo(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1)  return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h/24)}d ago`;
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // Enter key en el input de título
+  document.getElementById('new-title').addEventListener('keydown', e => {
+    if (e.key === 'Enter') createTask();
+  });
+
+  loadTasks();
+</script>
+</body>
+</html>
