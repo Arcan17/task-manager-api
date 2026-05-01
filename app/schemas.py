@@ -13,7 +13,9 @@ class TaskCreate(BaseModel):
 
 
 class TaskUpdate(BaseModel):
-    title: Optional[str] = Field(None, min_length=1, max_length=255, description="Task title")
+    title: Optional[str] = Field(
+        None, min_length=1, max_length=255, description="Task title"
+    )
     description: Optional[str] = Field(None, description="Task description")
     status: Optional[TaskStatus] = Field(None, description="Task status")
 

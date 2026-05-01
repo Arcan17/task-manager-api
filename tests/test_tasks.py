@@ -34,6 +34,7 @@ def client():
 
 # ── Create ────────────────────────────────────────────────────────────────────
 
+
 def test_create_task_minimal(client):
     response = client.post("/tasks/", json={"title": "Buy groceries"})
     assert response.status_code == 201
@@ -47,7 +48,11 @@ def test_create_task_minimal(client):
 
 
 def test_create_task_all_fields(client):
-    payload = {"title": "Deploy app", "description": "Deploy to prod", "status": "in_progress"}
+    payload = {
+        "title": "Deploy app",
+        "description": "Deploy to prod",
+        "status": "in_progress",
+    }
     response = client.post("/tasks/", json=payload)
     assert response.status_code == 201
     data = response.json()
@@ -65,10 +70,14 @@ def test_create_task_missing_title_fails(client):
 
 
 def test_create_task_invalid_status_fails(client):
-    assert client.post("/tasks/", json={"title": "X", "status": "invalid"}).status_code == 422
+    assert (
+        client.post("/tasks/", json={"title": "X", "status": "invalid"}).status_code
+        == 422
+    )
 
 
 # ── List ──────────────────────────────────────────────────────────────────────
+
 
 def test_list_tasks_empty(client):
     response = client.get("/tasks/")
@@ -119,6 +128,7 @@ def test_list_tasks_pagination(client):
 
 # ── Get ───────────────────────────────────────────────────────────────────────
 
+
 def test_get_task(client):
     task_id = client.post("/tasks/", json={"title": "Find me"}).json()["id"]
     response = client.get(f"/tasks/{task_id}")
@@ -133,6 +143,7 @@ def test_get_task_not_found(client):
 
 
 # ── Update ────────────────────────────────────────────────────────────────────
+
 
 def test_update_task_title(client):
     task_id = client.post("/tasks/", json={"title": "Original"}).json()["id"]
@@ -166,10 +177,13 @@ def test_update_task_not_found(client):
 
 def test_update_task_invalid_status(client):
     task_id = client.post("/tasks/", json={"title": "My task"}).json()["id"]
-    assert client.patch(f"/tasks/{task_id}", json={"status": "invalid"}).status_code == 422
+    assert (
+        client.patch(f"/tasks/{task_id}", json={"status": "invalid"}).status_code == 422
+    )
 
 
 # ── Delete ────────────────────────────────────────────────────────────────────
+
 
 def test_delete_task(client):
     task_id = client.post("/tasks/", json={"title": "Delete me"}).json()["id"]
@@ -182,6 +196,7 @@ def test_delete_task_not_found(client):
 
 
 # ── Health ────────────────────────────────────────────────────────────────────
+
 
 def test_health_check(client):
     response = client.get("/health")

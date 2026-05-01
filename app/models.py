@@ -24,4 +24,6 @@ class Task(Base):
     description = Column(Text, nullable=True)
     status = Column(SAEnum(TaskStatus), default=TaskStatus.pending, nullable=False)
     created_at = Column(DateTime(timezone=True), default=_utc_now, nullable=False)
-    updated_at = Column(DateTime(timezone=True), default=_utc_now, onupdate=_utc_now, nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True), default=_utc_now, onupdate=_utc_now, nullable=False
+    )
