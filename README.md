@@ -7,8 +7,25 @@
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat&logo=docker&logoColor=white)
 ![CI](https://img.shields.io/github/actions/workflow/status/Arcan17/task-manager-api/ci.yml?label=CI&logo=github)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-A production-ready RESTful API for task management built with **FastAPI**, **PostgreSQL**, and **SQLAlchemy**. Includes full CRUD operations, status filtering, database migrations with Alembic, containerization with Docker, and automated CI via GitHub Actions.
+A **production-ready RESTful API** for task management, built to demonstrate clean backend architecture with FastAPI, PostgreSQL, and SQLAlchemy. Includes full CRUD, status filtering, pagination, Alembic migrations, Docker Compose setup, 20+ automated tests, and GitHub Actions CI.
+
+**Why this project:** Task managers are a familiar domain, which makes this ideal for demonstrating backend fundamentals clearly — without domain complexity getting in the way. The focus is on the architecture: proper ORM usage, schema validation, migration workflow, containerization, and test coverage.
+
+---
+
+## Live API Docs
+
+Once running, interactive documentation is auto-generated at:
+- **Swagger UI:** `http://localhost:8000/docs`
+- **ReDoc:** `http://localhost:8000/redoc`
+
+| Swagger UI |
+|---|
+| *(add screenshot of /docs page here)* |
+
+> Save a screenshot to `docs/screenshots/swagger.png` and replace the placeholder above with `![Swagger UI](docs/screenshots/swagger.png)`.
 
 ---
 
@@ -232,6 +249,17 @@ alembic revision --autogenerate -m "describe your change"
 # Roll back one migration
 alembic downgrade -1
 ```
+
+---
+
+## Roadmap
+
+- [ ] JWT authentication (login, protected routes)
+- [ ] Task priorities and due dates
+- [ ] Assign tasks to users (multi-user support)
+- [ ] WebSocket endpoint for real-time task updates
+- [ ] Deploy public demo (Railway)
+- [ ] Rate limiting with slowapi
 
 ---
 
