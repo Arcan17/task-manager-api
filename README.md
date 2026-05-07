@@ -23,9 +23,7 @@ Once running, interactive documentation is auto-generated at:
 
 | Swagger UI |
 |---|
-| *(add screenshot of /docs page here)* |
-
-> Save a screenshot to `docs/screenshots/swagger.png` and replace the placeholder above with `![Swagger UI](docs/screenshots/swagger.png)`.
+| ![Swagger UI](docs/screenshots/swagger-ui.png) |
 
 ---
 
